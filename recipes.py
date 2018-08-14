@@ -24,5 +24,35 @@ for counter, recipe in enumerate(html_recipes):
 	if counter != 0 and counter % 3 == 2:
 		list_of_recipes.insert(len(list_of_recipes), recipe)
 
+difficulty_easy = dict()
+difficulty_intermediate = dict()
+difficulty_hard = dict()
+
 for link in list_of_recipes:
-	#Loop through url's to find ingredients and difficulty
+	url = 'http:' + link
+	r = requests.get(url)
+	soup = BeautifulSoup(r.content, 'html.parser')
+	difficulty_level = soup.findAll('dd', {"class": "o-RecipeInfo__a-Description"})
+	for counter, level in enumerate(difficulty_level):
+		if counter == (len(difficulty_level) / 2) - 1:
+			print('Fetching...')
+			if level.text.strip() == 'Easy':
+				recipe_name = soup.findAll('h1', {"class": "o-AssetTitle__a-Headline"})
+				for i, h in enumerate(recipe_name):
+					if i == 0:
+						name = h.text.strip()
+						difficulty_easy[name] = url
+			elif level.text.strip() == 'Intermediate':
+				recipe_name = soup.findAll('h1', {"class": "o-AssetTitle__a-Headline"})
+				for i, h in enumerate(recipe_name):
+					if i == 0:
+						name = h.text.strip()
+						difficulty_intermediate[name] = url
+			else:
+				recipe_name = soup.findAll('h1', {"class": "o-AssetTitle__a-Headline"})
+				for i, h in enumerate(recipe_name):
+					if i == 0:
+						name = h.text.strip()
+						difficulty_hard[name] = url
+for i in difficulty_easy:
+	print(i + ': ' + difficulty_easy[i])
